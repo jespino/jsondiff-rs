@@ -55,7 +55,7 @@ impl Matrix {
                 matrix.data[i][j] = f64::max(matrix.data[i][j-1], f64::max(matrix.data[i-1][j], matrix.data[i-1][j-1] + s));
             }
         }
-        return matrix;
+        matrix
     }
 
     fn length(&mut self, array1: &Value, array2: &Value, i: usize, j: usize) -> Vec<Length> {
@@ -98,7 +98,7 @@ fn array_diff(array1: &Value, array2: &Value) -> (Value, f64) {
     let mut changed = BTreeMap::new();
     let mut tot_s = 0.0;
 
-    for length in matrix.length(&array1, &array2, array1.as_array().unwrap().len(), array2.as_array().unwrap().len()) {
+    for length in matrix.length(array1, array2, array1.as_array().unwrap().len(), array2.as_array().unwrap().len()) {
         match length.sign {
             Sign::Positive => inserted.push((length.position, length.value)),
             Sign::Negative => deleted.insert(0, (length.position, length.value)),
@@ -113,22 +113,22 @@ fn array_diff(array1: &Value, array2: &Value) -> (Value, f64) {
     if s == 0.0 { return (array2.clone(), s) }
     if s == 1.0 { return (ObjectBuilder::new().unwrap(), s) }
 
-    if inserted.len() == 0 && deleted.len() == 0 && changed.len() == 0 {
+    if inserted.is_empty() && deleted.is_empty() && changed.is_empty() {
         return (Value::Object(BTreeMap::new()), s)
     }
 
     let mut diffs = ObjectBuilder::new();
-    if inserted.len() > 0 {
+    if !inserted.is_empty() {
         diffs = diffs.insert("inserted", inserted);
     }
-    if deleted.len() > 0 {
+    if !deleted.is_empty() {
         diffs = diffs.insert("deleted", deleted);
     }
-    if changed.len() > 0 {
+    if !changed.is_empty() {
         diffs = diffs.insert("changed", changed);
     }
 
-    return (diffs.unwrap(), s);
+    (diffs.unwrap(), s)
 }
 
 
@@ -172,21 +172,21 @@ fn obj_diff(obj1: &Value, obj2: &Value) -> (Value, f64) {
 	let s = if n_tot != 0 { smatched / n_tot as f64 } else { 1.0 };
 
     let mut diffs = ObjectBuilder::new();
-    if added.len() == 0 && removed.len() == 0 && changed.len() == 0 {
+    if added.is_empty() && removed.is_empty() && changed.is_empty() {
         return (Value::Object(BTreeMap::new()), s)
     }
 
-    if added.len() > 0 {
+    if !added.is_empty() {
         diffs = diffs.insert("added", added);
     }
-    if removed.len() > 0 {
+    if !removed.is_empty() {
         diffs = diffs.insert("removed", removed);
     }
-    if changed.len() > 0 {
+    if !changed.is_empty() {
         diffs = diffs.insert("changed", changed);
     }
 
-    return (diffs.unwrap(), s)
+    (diffs.unwrap(), s)
 }
 
 
@@ -200,7 +200,7 @@ pub fn value_diff(a: &Value, b: &Value) -> (Value, f64){
     if a.is_array() && b.is_array() {
         return array_diff(a, b);
     }
-    return (b.clone(), 0.0)
+    (b.clone(), 0.0)
 }
 
 #[cfg(test)]

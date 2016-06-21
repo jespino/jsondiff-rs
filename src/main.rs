@@ -44,7 +44,7 @@ fn main() {
     println!("processing");
     let differences = compare(&data1, &data2);
     match matches.value_of("OUTPUT") {
-        Some(output) => { let _ = File::create(output).unwrap().write_all(format!("{}", to_string_pretty(&differences).unwrap()).as_bytes()); },
+        Some(output) => { let _ = File::create(output).unwrap().write_all(to_string_pretty(&differences).unwrap().as_bytes()); },
         None => { println!("{}", to_string_pretty(&differences).unwrap()); }
     }
 }

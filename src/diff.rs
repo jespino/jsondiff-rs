@@ -3,7 +3,7 @@ use lcs::{value_diff};
 
 
 pub fn compare(a: &Value, b: &Value) -> Value {
-    return value_diff(a, b).0;
+    value_diff(a, b).0
 }
 
 #[cfg(test)]
