@@ -12,6 +12,7 @@ mod tests {
     use serde_json::value::Value;
     use serde_json::builder::{ArrayBuilder, ObjectBuilder};
     use std::collections::BTreeMap;
+    use test::Bencher;
 
     #[test]
     fn test_equality() {
@@ -39,5 +40,19 @@ mod tests {
         assert_eq!(ObjectBuilder::new().insert_object("changed", |builder| builder.insert("a", 3).insert("b", 4)).unwrap(),
                    compare(&ObjectBuilder::new().insert("a", 1).insert("b", 2).unwrap(),
                            &ObjectBuilder::new().insert("a", 3).insert("b", 4).unwrap()));
+    }
+
+    #[bench]
+    fn bench_compare_arrays(b: &mut Bencher) {
+        let array1 = ArrayBuilder::new().push(1).push(2).push(3).push(4).unwrap();
+        let array2 = ArrayBuilder::new().push(3).push(4).push(5).push(6).unwrap();
+        b.iter(|| compare(&array1, &array2));
+    }
+
+    #[bench]
+    fn bench_compare_dicts(b: &mut Bencher) {
+        let obj1 = ObjectBuilder::new().insert("a", 1).insert("b", 2).insert("c", 3).insert("d", 4).unwrap();
+        let obj2 = ObjectBuilder::new().insert("c", 3).insert("d", 4).insert("e", 5).insert("f", 6).unwrap();
+        b.iter(|| compare(&obj2, &obj1));
     }
 }

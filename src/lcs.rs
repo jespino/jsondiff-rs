@@ -3,8 +3,6 @@ use serde_json::builder::{ObjectBuilder};
 
 use std::collections::BTreeMap;
 
-type Error = String;
-
 struct Matrix {
     data: Vec<Vec<f64>>
 }
@@ -42,10 +40,10 @@ impl Matrix {
         let x = array1.as_array().unwrap().len();
         let y = array2.as_array().unwrap().len();
 
-        let mut matrix = Matrix {data: vec![]};
+        let mut matrix = Matrix {data: Vec::with_capacity(x+1) };
 
         for _ in 0..x+1 {
-            let mut row = vec![];
+            let mut row = Vec::with_capacity(y+1);
             for _ in 0..y+1 {
                 row.push(0.0);
             }
@@ -68,29 +66,20 @@ impl Matrix {
         if i > 0 && j > 0 {
             let (d, s) = value_diff(&array1.as_array().unwrap()[i-1], &array2.as_array().unwrap()[j-1]);
             if s > 0.0 && self.data[i][j] == self.data[i-1][j-1] + s {
-                let mut result = vec![];
-                for annotation in self.length(array1, array2, i-1, j-1) {
-                    result.push(annotation);
-                }
+                let mut result = self.length(array1, array2, i-1, j-1);
                 result.push(Length::new(Sign::Zero, d, j-1, s));
                 return result;
             }
         }
 
         if j > 0 && (i == 0 || self.data[i][j-1] >= self.data[i-1][j]) {
-            let mut result = vec![];
-            for annotation in self.length(array1, array2, i, j-1) {
-                result.push(annotation);
-            }
+            let mut result = self.length(array1, array2, i, j-1);
             result.push(Length::new(Sign::Positive, array2.as_array().unwrap()[j-1].clone(), j-1, 0.0));
             return result;
         }
 
         if i > 0 && (j == 0 || self.data[i][j-1] < self.data[i-1][j]) {
-            let mut result = vec![];
-            for annotation in self.length(array1, array2, i-1, j) {
-                result.push(annotation);
-            }
+            let mut result = self.length(array1, array2, i-1, j);
             result.push(Length::new(Sign::Negative, array1.as_array().unwrap()[i-1].clone(), i-1, 0.0));
             return result;
         }
@@ -213,4 +202,25 @@ pub fn value_diff(a: &Value, b: &Value) -> (Value, f64){
 	    return (b.clone(), 0.0)
     }
     return (Value::Object(BTreeMap::new()), 1.0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{array_diff, obj_diff};
+    use test::Bencher;
+    use serde_json::builder::{ArrayBuilder, ObjectBuilder};
+
+    #[bench]
+    fn bench_array_diff(b: &mut Bencher) {
+        let array1 = ArrayBuilder::new().push(1).push(2).push(3).push(4).unwrap();
+        let array2 = ArrayBuilder::new().push(3).push(4).push(5).push(6).unwrap();
+        b.iter(|| array_diff(&array1, &array2));
+    }
+
+    #[bench]
+    fn bench_obj_diff(b: &mut Bencher) {
+        let obj1 = ObjectBuilder::new().insert("a", 1).insert("b", 2).insert("c", 3).insert("d", 4).unwrap();
+        let obj2 = ObjectBuilder::new().insert("c", 3).insert("d", 4).insert("e", 5).insert("f", 6).unwrap();
+        b.iter(|| obj_diff(&obj1, &obj2));
+    }
 }

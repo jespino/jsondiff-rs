@@ -1,6 +1,8 @@
+#![feature(test)]
 extern crate serde;
 extern crate serde_json;
 extern crate clap;
+extern crate test;
 
 mod diff;
 mod lcs;
