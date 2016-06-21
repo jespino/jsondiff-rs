@@ -3,10 +3,6 @@ use serde_json::builder::{ObjectBuilder};
 
 use std::collections::BTreeMap;
 
-struct Matrix {
-    data: Vec<Vec<f64>>
-}
-
 enum Sign {
     Positive,
     Negative,
@@ -31,6 +27,9 @@ impl Length {
     }
 }
 
+struct Matrix {
+    data: Vec<Vec<f64>>
+}
 
 impl Matrix {
     fn new(array1: &Value, array2: &Value) -> Matrix {
@@ -192,16 +191,16 @@ fn obj_diff(obj1: &Value, obj2: &Value) -> (Value, f64) {
 
 
 pub fn value_diff(a: &Value, b: &Value) -> (Value, f64){
+    if a == b {
+        return (Value::Object(BTreeMap::new()), 1.0);
+    }
 	if a.is_object() && b.is_object() {
 	    return obj_diff(a, b);
     }
     if a.is_array() && b.is_array() {
         return array_diff(a, b);
     }
-	if a != b {
-	    return (b.clone(), 0.0)
-    }
-    return (Value::Object(BTreeMap::new()), 1.0)
+    return (b.clone(), 0.0)
 }
 
 #[cfg(test)]
