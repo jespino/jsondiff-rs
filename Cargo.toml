@@ -7,3 +7,13 @@ authors = ["Jesús Espino <jespinog@gmail.com>"]
 serde = "*"
 serde_json = "*"
 clap = "*"
+log = "*"
+loggerv = "*"
+
+[lib]
+name = "jsondiff"
+path = "src/lib/mod.rs"
+
+[[bin]]
+name = "jsondiff"
+path = "src/bin.rs"

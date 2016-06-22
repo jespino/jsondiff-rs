@@ -1,9 +1,19 @@
+#![feature(test)]
+extern crate serde_json;
+extern crate test;
+
+mod lcs;
+
 use serde_json::value::Value;
 use lcs::{value_diff};
 
 
-pub fn compare(a: &Value, b: &Value) -> Value {
+pub fn diff(a: &Value, b: &Value) -> Value {
     value_diff(a, b).0
+}
+
+pub fn similarity(a: &Value, b: &Value) -> f64 {
+    value_diff(a, b).1
 }
 
 #[cfg(test)]
