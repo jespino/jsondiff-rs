@@ -34,7 +34,7 @@ use lcs::{value_diff};
 /// let array1 = serde_json::builder::ArrayBuilder::new().push(1).push(2).unwrap();
 /// let array2 = serde_json::builder::ArrayBuilder::new().push(1).push(2).unwrap();
 /// let differences = jsondiff::diff(&array1, &array2);
-/// // differences == {"deleted": {}}
+/// // differences == {}
 /// assert_eq!(differences, ObjectBuilder::new().unwrap())
 /// # }
 /// ```
