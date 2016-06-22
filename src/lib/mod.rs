@@ -13,6 +13,7 @@ extern crate serde_json;
 extern crate test;
 
 mod lcs;
+mod matrix;
 
 use serde_json::value::Value;
 use lcs::{value_diff};
