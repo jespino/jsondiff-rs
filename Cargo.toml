@@ -15,5 +15,5 @@ name = "jsondiff"
 path = "src/lib/mod.rs"
 
 [[bin]]
-name = "jsondiff"
+name = "json-diff"
 path = "src/bin.rs"

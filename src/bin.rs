@@ -14,8 +14,7 @@ use serde_json::ser::to_string_pretty;
 use serde_json::de::from_reader;
 use std::io::prelude::*;
 use std::fs::File;
-use jsondiff::diff;
-use log::LogLevel;
+use jsondiff::{diff, similarity};
 
 fn main() {
     let matches = App::new("JsonDiff")
@@ -34,12 +33,6 @@ fn main() {
                                .short("s")
                                .long("similarity")
                                .help("Show only the similarity"))
-                          .arg(Arg::with_name("log-level")
-                               .short("l")
-                               .long("log-level")
-                               .help("Log level")
-                               .value_name("[ERROR|WARN|INFO|DEBUG|TRACE]")
-                               .takes_value(true))
 						  .arg(Arg::with_name("verbosity")
                                .short("v")
                                .multiple(true)
@@ -69,10 +62,14 @@ fn main() {
     };
 
     info!("processing");
-    let differences = diff(&data1, &data2);
-    match matches.value_of("output") {
-        Some("-") => { let _ = std::io::stdout().write_all(to_string_pretty(&differences).unwrap().as_bytes()); },
-        Some(output) => { let _ = File::create(output).unwrap().write_all(to_string_pretty(&differences).unwrap().as_bytes()); },
-        None => { println!("{}", to_string_pretty(&differences).unwrap()); }
+    if matches.is_present("similarity") {
+        println!("{:.2}%", similarity(&data1, &data2));
+    } else {
+        let differences = diff(&data1, &data2);
+        match matches.value_of("output") {
+            Some("-") => { let _ = std::io::stdout().write_all(to_string_pretty(&differences).unwrap().as_bytes()); },
+            Some(output) => { let _ = File::create(output).unwrap().write_all(to_string_pretty(&differences).unwrap().as_bytes()); },
+            None => { println!("{}", to_string_pretty(&differences).unwrap()); }
+        }
     }
 }
