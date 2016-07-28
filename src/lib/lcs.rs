@@ -28,7 +28,7 @@ fn array_diff(array1: &Value, array2: &Value) -> (Value, f64) {
     let s = if tot_n == 0 { 1.0 } else { tot_s / tot_n as f64};
 
     if s == 0.0 { return (array2.clone(), s) }
-    if s == 1.0 { return (ObjectBuilder::new().unwrap(), s) }
+    if s == 1.0 { return (ObjectBuilder::new().build(), s) }
 
     if inserted.is_empty() && deleted.is_empty() && changed.is_empty() {
         return (Value::Object(BTreeMap::new()), s)
@@ -45,7 +45,7 @@ fn array_diff(array1: &Value, array2: &Value) -> (Value, f64) {
         diffs = diffs.insert("changed", changed);
     }
 
-    (diffs.unwrap(), s)
+    (diffs.build(), s)
 }
 
 
@@ -103,7 +103,7 @@ fn obj_diff(obj1: &Value, obj2: &Value) -> (Value, f64) {
         diffs = diffs.insert("changed", changed);
     }
 
-    (diffs.unwrap(), s)
+    (diffs.build(), s)
 }
 
 
